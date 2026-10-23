@@ -279,13 +279,28 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2">
-                                <a href="${deal.open_giveaway_url || deal.open_giveaway}" target="_blank" class="text-center py-2.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition">
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <a href="${deal.open_giveaway_url || deal.open_giveaway}" target="_blank" class="text-center py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition">
                                     Claim Game
                                 </a>
-                                <a href="https://t.me/price_glitch_live" target="_blank" class="text-center py-2.5 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs rounded-xl transition">
+                                <a href="https://t.me/price_glitch_live" target="_blank" class="text-center py-2 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs rounded-xl transition">
                                     Instant Alert
                                 </a>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-1 pt-2 border-t border-zinc-800/60 text-[11px] text-zinc-500">
+                                <span>Share Deal:</span>
+                                <div class="flex items-center gap-1">
+                                    <a href="https://www.reddit.com/r/freegames/submit?title=${encodeURIComponent('[' + platforms + '] (Game) ' + deal.title + ' - 100% OFF')}&url=${encodeURIComponent(deal.open_giveaway_url || deal.open_giveaway)}" target="_blank" class="px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 hover:text-orange-400 rounded text-[10px] font-semibold border border-zinc-700/60 transition">
+                                        Reddit
+                                    </a>
+                                    <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('🔥 Free Game Alert: ' + deal.title + ' is 100% OFF!\n\n⚡ Live alert channel: https://t.me/price_glitch_live')}" target="_blank" class="px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 hover:text-cyan-400 rounded text-[10px] font-semibold border border-zinc-700/60 transition">
+                                        X / Twitter
+                                    </a>
+                                    <a href="https://t.me/share/url?url=https://t.me/price_glitch_live&text=${encodeURIComponent('🔥 ' + deal.title + ' is 100% FREE! Join live alerts channel:')}" target="_blank" class="px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 hover:text-sky-400 rounded text-[10px] font-semibold border border-zinc-700/60 transition">
+                                        Telegram
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     `;

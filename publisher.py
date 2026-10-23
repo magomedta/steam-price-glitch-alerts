@@ -75,6 +75,13 @@ def publish_to_telegram(deal: dict) -> bool:
 
     try:
         resp = requests.post(url, json=payload, timeout=10)
+        # Also broadcast to Discord if configured
+        try:
+            from discord_broadcaster import broadcast_to_discord
+            broadcast_to_discord(deal)
+        except Exception:
+            pass
+
         if resp.status_code == 200:
             return True
         else:

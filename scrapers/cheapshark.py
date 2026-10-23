@@ -11,20 +11,19 @@ def fetch_cheapshark_glitches():
     """
     glitches = []
     try:
-        # Request top savings sorted descending
+        # Request top savings sorted descending (desc=0 in CheapShark = highest savings first)
         params = {
             "sortBy": "Savings",
-            "desc": 1,
             "pageSize": 60,
             "output": "json"
         }
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            "User-Agent": "PriceGlitchMonitor/2.0 (alerts@priceglitch.live)"
         }
 
         response = requests.get(API_URL, params=params, headers=headers, timeout=12)
         if response.status_code != 200:
-            logging.error(f"[CheapShark] API returned status {response.status_code}")
+            logging.error(f"[CheapShark] API returned status {response.status_code}: {response.text[:100]}")
             return []
 
         deals = response.json()
@@ -41,9 +40,9 @@ def fetch_cheapshark_glitches():
 
                 # Criteria for Price Glitch / Anomaly:
                 # 1. Savings >= MIN_DISCOUNT_PERCENT (e.g. 85% to 100%)
-                # 2. Or high value item (> $30 normal price) selling for under $5!
+                # 2. Or high value item (> $20 normal price) selling for under $5 with >= 75% off
                 is_high_discount = savings >= MIN_DISCOUNT_PERCENT
-                is_severe_price_drop = (normal_price >= 29.99 and sale_price <= MAX_GLITCH_PRICE and savings >= 75)
+                is_severe_price_drop = (normal_price >= 19.99 and sale_price <= MAX_GLITCH_PRICE and savings >= 75)
 
                 if is_high_discount or is_severe_price_drop:
                     # Construct affiliate URL

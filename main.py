@@ -44,6 +44,7 @@ def run_scanner_cycle():
 
     all_deals = cs_deals + gp_deals
     new_glitches_found = 0
+    max_posts_this_cycle = 4  # Post up to 4 deals per cycle with pacing to avoid Telegram rate limits
 
     for deal in all_deals:
         deal_id = deal.get("id")
@@ -66,7 +67,7 @@ def run_scanner_cycle():
                 url=deal.get("url")
             )
 
-            # Publish immediately to Telegram
+            # Publish to Telegram
             publish_to_telegram(deal)
 
             # Console notification
@@ -74,6 +75,13 @@ def run_scanner_cycle():
                   f"{Fore.YELLOW}{title}{Style.RESET_ALL} | " +
                   f"{Fore.CYAN}{store}{Style.RESET_ALL} | " +
                   f"Was: ${normal_price:.2f} -> {Fore.GREEN}${sale_price:.2f} (-{int(savings)}%){Style.RESET_ALL}")
+
+            # Safe spacing to respect Telegram rate limits
+            time.sleep(2.5)
+
+            if new_glitches_found >= max_posts_this_cycle:
+                # Remaining new glitches will be posted on subsequent cycles
+                break
 
     if new_glitches_found > 0:
         try:
