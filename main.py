@@ -54,7 +54,7 @@ def run_scanner_cycle():
         normal_price = deal.get("normal_price")
         store = deal.get("store")
 
-        if not database.is_deal_seen(deal_id):
+        if not database.is_deal_seen(deal_id, title=title):
             new_glitches_found += 1
             # Save to SQLite database to prevent double-alerts
             database.save_deal(

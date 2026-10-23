@@ -22,10 +22,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-def is_deal_seen(deal_id: str) -> bool:
+def is_deal_seen(deal_id: str, title: str = None) -> bool:
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM seen_deals WHERE deal_id = ?", (deal_id,))
+    if title:
+        cursor.execute("SELECT 1 FROM seen_deals WHERE deal_id = ? OR LOWER(TRIM(title)) = LOWER(TRIM(?))", (deal_id, title))
+    else:
+        cursor.execute("SELECT 1 FROM seen_deals WHERE deal_id = ?", (deal_id,))
     exists = cursor.fetchone() is not None
     conn.close()
     return exists
