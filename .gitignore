@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 glitches.db
+shorts_output/*.mp4
+shorts_output/*.wav
+shorts_output/*.mp3
