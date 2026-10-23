@@ -38,7 +38,7 @@ def format_glitch_message(deal: dict) -> str:
 
 def publish_to_telegram(deal: dict) -> bool:
     """
-    Sends the formatted glitch alert directly to the designated Telegram Channel.
+    Sends the formatted glitch alert with photo directly to the designated Telegram Channel.
     """
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHANNEL_ID:
         # Simulation / Console Mode
@@ -46,8 +46,7 @@ def publish_to_telegram(deal: dict) -> bool:
         return True
 
     text = format_glitch_message(deal)
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-
+    thumb = deal.get("thumb")
     title = deal.get("title", "Game Deal")
     savings = int(deal.get("savings", 100))
     share_text = urllib.parse.quote(f"🔥 Price Glitch Alert: {title} is {savings}% OFF! Join the live alert channel before it expires:")
@@ -65,28 +64,50 @@ def publish_to_telegram(deal: dict) -> bool:
         ]
     }
 
-    payload = {
-        "chat_id": TELEGRAM_CHANNEL_ID,
-        "text": text,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": False,
-        "reply_markup": json.dumps(inline_keyboard)
-    }
-
-    try:
-        resp = requests.post(url, json=payload, timeout=10)
-        # Also broadcast to Discord if configured
+    # 1. Try sending with photo first
+    posted_successfully = False
+    if thumb:
+        photo_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
+        photo_payload = {
+            "chat_id": TELEGRAM_CHANNEL_ID,
+            "photo": thumb,
+            "caption": text,
+            "parse_mode": "HTML",
+            "reply_markup": json.dumps(inline_keyboard)
+        }
         try:
-            from discord_broadcaster import broadcast_to_discord
-            broadcast_to_discord(deal)
-        except Exception:
-            pass
+            resp = requests.post(photo_url, json=photo_payload, timeout=12)
+            if resp.status_code == 200 and resp.json().get("ok"):
+                posted_successfully = True
+            else:
+                logging.warning(f"[Telegram Photo] sendPhoto failed: {resp.text[:120]}, falling back to text...")
+        except Exception as e:
+            logging.warning(f"[Telegram Photo] Exception: {e}, falling back to text...")
 
-        if resp.status_code == 200:
-            return True
-        else:
-            logging.error(f"[Telegram] Failed to send message: {resp.text}")
-            return False
-    except Exception as e:
-        logging.error(f"[Telegram] Exception sending message: {e}")
-        return False
+    # 2. Fallback to standard text message if no photo or photo failed
+    if not posted_successfully:
+        msg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        msg_payload = {
+            "chat_id": TELEGRAM_CHANNEL_ID,
+            "text": text,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": False,
+            "reply_markup": json.dumps(inline_keyboard)
+        }
+        try:
+            resp = requests.post(msg_url, json=msg_payload, timeout=10)
+            if resp.status_code == 200 and resp.json().get("ok"):
+                posted_successfully = True
+            else:
+                logging.error(f"[Telegram] Failed to send message: {resp.text}")
+        except Exception as e:
+            logging.error(f"[Telegram] Exception sending message: {e}")
+
+    # Also broadcast to Discord if configured
+    try:
+        from discord_broadcaster import broadcast_to_discord
+        broadcast_to_discord(deal)
+    except Exception:
+        pass
+
+    return posted_successfully
