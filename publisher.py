@@ -6,7 +6,7 @@ from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID
 
 def format_glitch_message(deal: dict) -> str:
     """
-    Constructs high-converting, viral English alert text for Telegram.
+    Constructs high-converting, bilingual alert text (English primary + Russian secondary).
     """
     title = deal.get("title")
     store = deal.get("store")
@@ -16,23 +16,27 @@ def format_glitch_message(deal: dict) -> str:
     url = deal.get("url")
 
     if sale_price == 0.0:
-        price_line = f"💰 Normal Price: <s>${normal_price:.2f}</s>\n🔥 <b>Glitch Price: FREE ($0.00)</b>"
-        discount_badge = "100% FREE"
+        price_en = f"💰 Normal Price: <s>${normal_price:.2f}</s>\n🔥 <b>Glitch Price: FREE ($0.00)</b>"
+        discount_badge_en = "100% FREE"
+        discount_badge_ru = "100% ХАЛЯВА"
     else:
-        price_line = f"💰 Was: <s>${normal_price:.2f}</s>\n🔥 <b>Now: ${sale_price:.2f}</b>"
-        discount_badge = f"-{int(savings)}% OFF"
+        price_en = f"💰 Was: <s>${normal_price:.2f}</s>\n🔥 <b>Now: ${sale_price:.2f}</b>"
+        discount_badge_en = f"-{int(savings)}% OFF"
+        discount_badge_ru = f"СКИДКА -{int(savings)}%"
 
     message = (
-        f"🚨 <b>PRICE GLITCH DETECTED! ({discount_badge})</b>\n"
+        f"🚨 <b>PRICE GLITCH DETECTED! ({discount_badge_en})</b>\n"
+        f"🇷🇺 <i>Баг цены / {discount_badge_ru}</i>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"📦 <b>{title}</b>\n"
-        f"🏪 Store: <b>{store}</b>\n\n"
-        f"{price_line}\n"
-        f"⚡ Discount: <b>{discount_badge}</b>\n\n"
-        f"⏳ <i>Status: ACTIVE (Price error may be fixed anytime!)</i>\n"
+        f"🏪 Store / Магазин: <b>{store}</b>\n\n"
+        f"{price_en}\n"
+        f"⚡ Discount / Скидка: <b>{discount_badge_en}</b>\n\n"
+        f"⏳ <i>Status: ACTIVE (Hurry, price error will be patched!)</i>\n"
+        f"⏳ <i>Успейте забрать, пока ошибку цен не исправили!</i>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"👉 <a href='{url}'><b>[ 🛒 CLAIM DEAL / BUY NOW ]</b></a>\n\n"
-        f"⚡ <b>Feed:</b> @price_glitch_live | 🔔 <i>Turn notifications ON!</i>"
+        f"👉 <a href='{url}'><b>[ 🛒 CLAIM DEAL / ЗАБРАТЬ ]</b></a>\n\n"
+        f"⚡ <b>Feed / Канал:</b> @price_glitch_live | 🔔 <i>Turn ON / Включите 🔔</i>"
     )
     return message
 
@@ -49,17 +53,17 @@ def publish_to_telegram(deal: dict) -> bool:
     thumb = deal.get("thumb")
     title = deal.get("title", "Game Deal")
     savings = int(deal.get("savings", 100))
-    share_text = urllib.parse.quote(f"🔥 Price Glitch Alert: {title} is {savings}% OFF! Join the live alert channel before it expires:")
+    share_text = urllib.parse.quote(f"🔥 Price Glitch / Баг цены: {title} (-{savings}%)! Заходи в канал с моментальными оповещениями:")
     share_url = f"https://t.me/share/url?url=https://t.me/price_glitch_live&text={share_text}"
 
     inline_keyboard = {
         "inline_keyboard": [
             [
-                {"text": f"🛒 CLAIM DEAL (-{savings}%)", "url": deal.get("url")}
+                {"text": f"🛒 BUY / ЗАБРАТЬ (-{savings}%)", "url": deal.get("url")}
             ],
             [
-                {"text": "📢 Share Deal (+Invite)", "url": share_url},
-                {"text": "⚡ Join Live Alerts", "url": "https://t.me/price_glitch_live"}
+                {"text": "📢 Share / Поделиться (+Invite)", "url": share_url},
+                {"text": "⚡ Join / Подписаться", "url": "https://t.me/price_glitch_live"}
             ]
         ]
     }

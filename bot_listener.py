@@ -31,16 +31,19 @@ def start_bot_polling():
 
                         if text.startswith("/start"):
                             reply_text = (
-                                "⚡ <b>Welcome to Price Glitch & Freebies Alert!</b>\n\n"
+                                "⚡ <b>Welcome to Price Glitch & Freebies Alert!</b>\n"
                                 "We scan 35+ global digital stores (Steam, Epic Games, GOG, Humble Store) "
                                 "every 30 seconds for <b>85% - 100% pricing errors and free giveaways</b>.\n\n"
-                                "👉 <b>Join our official live feed channel for instant notifications:</b>\n"
+                                "🇷🇺 <b>Добро пожаловать в Price Glitch Live!</b>\n"
+                                "Мы отслеживаем 35+ игровых магазинов в реальном времени. "
+                                "Узнавайте о <b>багах цен и 100% халяве</b> первыми до фикса!\n\n"
+                                "👉 <b>Join our live feed / Подписаться на канал:</b>\n"
                                 "📢 @price_glitch_live"
                             )
                             reply_keyboard = {
                                 "inline_keyboard": [
-                                    [{"text": "⚡ OPEN PRICE GLITCH LIVE", "url": "https://t.me/price_glitch_live"}],
-                                    [{"text": "📢 Share with Friends", "url": "https://t.me/share/url?url=https://t.me/price_glitch_live&text=Check%20out%20live%20price%20glitches%20and%20100%%20free%20games!"}]
+                                    [{"text": "⚡ OPEN CHANNEL / КАНАЛ", "url": "https://t.me/price_glitch_live"}],
+                                    [{"text": "📢 Share / Поделиться", "url": "https://t.me/share/url?url=https://t.me/price_glitch_live&text=Price%20Glitches%20&%20Баги%20цен%20в%20Steam!"}]
                                 ]
                             }
                             send_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"

@@ -45,26 +45,27 @@ def generate_feeds():
         deal_id = deal.get("id", str(hash(title)))
 
         price_str = "100% FREE ($0.00)" if sale_price == 0.0 else f"${sale_price:.2f} (-{savings}%)"
+        price_str_ru = "100% ХАЛЯВА" if sale_price == 0.0 else f"СКИДКА -{savings}%"
 
         item_desc = (
-            f"🚨 PRICE GLITCH ({savings}% OFF): {title} on {store}.\n"
-            f"Regular Price: ${normal_price:.2f} -> Glitch Price: {price_str}\n\n"
-            f"Claim link: {url}\n\n"
-            f"⚡ For 0-second push notifications, join Telegram: https://t.me/price_glitch_live"
+            f"🚨 PRICE GLITCH / БАГ ЦЕНЫ ({savings}% OFF): {title} on {store}.\n"
+            f"Regular Price / Обычная цена: ${normal_price:.2f} -> Glitch Price / По скидке: {price_str}\n\n"
+            f"Claim link / Забрать: {url}\n\n"
+            f"⚡ Live Telegram Feed / Оповещения 24/7: https://t.me/price_glitch_live"
         )
 
         # Append to JSON feed
         json_feed["items"].append({
             "id": deal_id,
             "url": url,
-            "title": f"[{store}] {title} - {price_str}",
+            "title": f"[{store}] {title} - {price_str} ({price_str_ru})",
             "content_text": item_desc,
             "date_published": datetime.now(timezone.utc).isoformat()
         })
 
         # Append to RSS XML
         item = ET.SubElement(channel, "item")
-        ET.SubElement(item, "title").text = f"[{store}] {title} - {price_str}"
+        ET.SubElement(item, "title").text = f"[{store}] {title} - {price_str} ({price_str_ru})"
         ET.SubElement(item, "link").text = url
         ET.SubElement(item, "guid").text = deal_id
         ET.SubElement(item, "description").text = item_desc
