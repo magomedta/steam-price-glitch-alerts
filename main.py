@@ -75,7 +75,13 @@ def run_scanner_cycle():
                   f"{Fore.CYAN}{store}{Style.RESET_ALL} | " +
                   f"Was: ${normal_price:.2f} -> {Fore.GREEN}${sale_price:.2f} (-{int(savings)}%){Style.RESET_ALL}")
 
-    if new_glitches_found == 0:
+    if new_glitches_found > 0:
+        try:
+            from feed_generator import generate_feeds
+            generate_feeds()
+        except Exception as e:
+            logging.warning(f"Failed updating feeds: {e}")
+    else:
         print(f"[{timestamp}] Feeds checked. No new unposted glitches this tick. Monitoring active...")
 
     return new_glitches_found

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://magomedta.github.io/steam-price-glitch-alerts/sitemap.xml

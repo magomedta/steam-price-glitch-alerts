@@ -1,6 +1,7 @@
 import requests
 import json
 import logging
+import urllib.parse
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID
 
 def format_glitch_message(deal: dict) -> str:
@@ -28,10 +29,10 @@ def format_glitch_message(deal: dict) -> str:
         f"🏪 Store: <b>{store}</b>\n\n"
         f"{price_line}\n"
         f"⚡ Discount: <b>{discount_badge}</b>\n\n"
-        f"⏳ <i>Status: ACTIVE (Hurry, price error will be fixed soon!)</i>\n"
+        f"⏳ <i>Status: ACTIVE (Price error may be fixed anytime!)</i>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"👉 <a href='{url}'><b>[ 🛒 CLAIM DEAL / BUY NOW ]</b></a>\n\n"
-        f"📢 <i>Forward to friends before it's patched!</i>"
+        f"⚡ <b>Feed:</b> @price_glitch_live | 🔔 <i>Turn notifications ON!</i>"
     )
     return message
 
@@ -47,13 +48,19 @@ def publish_to_telegram(deal: dict) -> bool:
     text = format_glitch_message(deal)
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
+    title = deal.get("title", "Game Deal")
+    savings = int(deal.get("savings", 100))
+    share_text = urllib.parse.quote(f"🔥 Price Glitch Alert: {title} is {savings}% OFF! Join the live alert channel before it expires:")
+    share_url = f"https://t.me/share/url?url=https://t.me/price_glitch_live&text={share_text}"
+
     inline_keyboard = {
         "inline_keyboard": [
             [
-                {"text": f"🛒 BUY NOW (-{int(deal.get('savings'))}%)", "url": deal.get("url")}
+                {"text": f"🛒 CLAIM DEAL (-{savings}%)", "url": deal.get("url")}
             ],
             [
-                {"text": "📢 Share with friends", "url": f"https://t.me/share/url?url={deal.get('url')}&text=Price%20Glitch%20Alert!"}
+                {"text": "📢 Share Deal (+Invite)", "url": share_url},
+                {"text": "⚡ Join Live Alerts", "url": "https://t.me/price_glitch_live"}
             ]
         ]
     }
